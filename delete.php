@@ -21,8 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         try {
             // Prepare SQL statement to delete the user from the database
-            $sql = "DELETE FROM users WHERE id=$id";
-            $conn->exec($sql);
+            $sql = "DELETE FROM users WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([':id' => $id]);
+
+            /*
+            Using a parameterized query with placeholders (:id) helps prevent SQL injection attacks 
+            by ensuring that user input is treated as data, not executable code.
+            */
 
             // Redirect to the read page after successful deletion
             header("Location: read.php");
@@ -50,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form method="post">
         <label>ID: <input type="number" name="id"></label><br><br>
 
-        <input type="submit" value="Delete">
+        <input type="submit" value="Delete"><br><br>
     </form>
 
     <?php

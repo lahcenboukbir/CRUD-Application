@@ -6,12 +6,21 @@ require 'conn.php';
 try {
     // SQL query to select all users from the 'users' table
     $sql = 'SELECT * FROM users';
+    $stmt = $conn->query($sql); // Execute the query
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all results as an associative array
+    /* 
+    PDO::FETCH_ASSOC fetches the data as an associative array, 
+    making it easier to access the column values by their names.
+    */
 
-    // Execute the query and fetch all results
-    $users = $conn->query($sql);
 } catch (PDOException $e) {
     // Display an error message if the query fails
-    echo "Error: " . $e->getMessage();
+    echo "Error: " . htmlspecialchars($e->getMessage()); // Use htmlspecialchars to prevent XSS
+
+    /*
+    Using htmlspecialchars() prevents potential XSS (Cross-Site Scripting) attacks by converting special characters to HTML entities. 
+    This is important for displaying error messages safely.
+    */
 }
 
 ?>
@@ -28,19 +37,26 @@ try {
 <body>
     <h1>Read Users</h1>
 
-    <?php
+    <!-- Message when no users are present -->
+    <?php if (empty($users)): ?>
+        <p>No users found.</p>
+    <?php else: ?>
 
-    // Iterate over each user record and display their details
-    foreach ($users as $user): ?>
+        <?php
 
-        <ul>
-            <li><strong>ID:</strong> <?php echo htmlspecialchars($user['id']); ?></li>
-            <li><strong>Name:</strong> <?php echo htmlspecialchars($user['name']); ?></li>
-            <li><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></li>
-            <li><strong>Created at:</strong> <?php echo htmlspecialchars($user['created_at']); ?></li>
-        </ul>
+        // Iterate over each user record and display their details
+        foreach ($users as $user): ?>
 
-    <?php endforeach; ?>
+            <ul>
+                <li><strong>ID:</strong> <?php echo htmlspecialchars($user['id']); ?></li>
+                <li><strong>Name:</strong> <?php echo htmlspecialchars($user['name']); ?></li>
+                <li><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></li>
+                <li><strong>Created at:</strong> <?php echo htmlspecialchars($user['created_at']); ?></li>
+            </ul>
+
+        <?php endforeach; ?>
+
+    <?php endif; ?>
 
     <!-- Navigation buttons to other pages -->
     <div>

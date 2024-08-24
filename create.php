@@ -30,8 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         try {
             // Prepare SQL statement to insert user data into the database
-            $sql = "INSERT INTO users (name, email, age) VALUES ('$name', '$email', $age)";
-            $conn->exec($sql);
+            $sql = "INSERT INTO users (name, email, age) VALUES (:name, :email, :age)";
+            $stmt = $conn->prepare($sql); // Use prepared statements to prevent SQL injection
+            $stmt->execute([':name' => $name, ':email' => $email, ':age' => $age]);
+
+            /* 
+            Prepared statements help protect against SQL injection attacks by separating SQL logic from data input. 
+            This is a more secure method than directly embedding variables into the SQL query. 
+            */
 
             // Success message
             echo "Record inserted successfully";
@@ -60,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label>Email: <input type="email" name="email"></label><br><br>
         <label>Age: <input type="number" name="age"></label><br><br>
 
-        <input type="submit" value="Create">
+        <input type="submit" value="Create"><br><br>
     </form>
 
     <?php

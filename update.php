@@ -36,8 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         try {
             // Prepare SQL statement to update user data in the database
-            $sql = "UPDATE users SET name = '$name', email = '$email', age = $age WHERE id = $id";
-            $conn->exec($sql);
+            $sql = "UPDATE users SET name = :name, email = :email, age = :age WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                ':name' => $name,
+                ':email' => $email,
+                ':age' => $age,
+                ':id' => $id
+            ]);
+            
+            // Redirect to the read page after successful update
+            header("Location: read.php");
+            exit;
 
             // Success message
             echo "Record updated successfully";
@@ -62,13 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <h1>Update a User</h1>
     <!-- Form to update an existing user -->
     <form method="post">
-        <label>ID: <input type="number" name="id"></label><br><br>
-        <label>Name: <input type="text" name="name"></label><br><br>
-        <label>Email: <input type="email" name="email"></label><br><br>
-        <label>Age: <input type="number" name="age"></label><br><br>
+            <label>ID: <input type="number" name="id" value="<?php echo htmlspecialchars($id ?? ''); ?>"></label><br><br>
+            <label>Name: <input type="text" name="name" value="<?php echo htmlspecialchars($name ?? ''); ?>"></label><br><br>
+            <label>Email: <input type="email" name="email" value="<?php echo htmlspecialchars($email ?? ''); ?>"></label><br><br>
+            <label>Age: <input type="number" name="age" value="<?php echo htmlspecialchars($age ?? ''); ?>"></label><br><br>
 
-        <input type="submit" value="Update">
-    </form>
+            <input type="submit" value="Update"><br><br>
+        </form>
 
     <?php
     // Display any errors if present

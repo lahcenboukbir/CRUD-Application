@@ -2,8 +2,8 @@
 
 // Database connection settings
 $servername = "localhost";  // Hostname of the database server
-$username = "username";         // Database username
-$password = "password";     // Database password
+$username = "root";         // Database username
+$password = "azer1234";     // Database password
 
 try {
     // Create a new PDO instance to connect to the MySQL database
